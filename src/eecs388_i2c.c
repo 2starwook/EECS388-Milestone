@@ -81,18 +81,61 @@ void stopMotor(){
     /*
         Write Task 3 code here
     */
+    int bigNum = 280;
+    uint8_t low;
+    uint8_t high;
+    breakup(bigNum,&low,&high);
+    bufWrite[0] = low;
+    bufWrite[1] = high;
+    success = metal_i2c_transfer(i2c,PCA9685_LED0_OFF_L,bufWrite,2,bufRead,1);
 }
 
 void driveForward(uint8_t speedFlag){
     /*
         Write Task 4 code here
     */
+    int bigNum;
+    uint8_t low;
+    uint8_t high;
+    switch (speedFlag){
+        case 1:
+            bigNum = 313;
+            break;
+        case 2:
+            bigNum = 315;
+            break;
+        case 3:
+            bigNum = 317;
+            break;
+    }
+    breakup(bigNum,&low,&high);
+    bufWrite[0] = low;
+    bufWrite[1] = high;
+    success = metal_i2c_transfer(i2c,PCA9685_LED0_OFF_L,bufWrite,2,bufRead,1);
 }
 
 void driveReverse(uint8_t speedFlag){
     /*
         Write task 5 code here
     */
+    int bigNum;
+    uint8_t low;
+    uint8_t high;
+    switch (speedFlag){
+        case 1:
+            bigNum = 267;
+            break;
+        case 2:
+            bigNum = 265;
+            break;
+        case 3:
+            bigNum = 263;
+            break;
+    }
+    breakup(bigNum,&low,&high);
+    bufWrite[0] = low;
+    bufWrite[1] = high;
+    success = metal_i2c_transfer(i2c,PCA9685_LED0_OFF_L,bufWrite,2,bufRead,1);
 }
 
 
