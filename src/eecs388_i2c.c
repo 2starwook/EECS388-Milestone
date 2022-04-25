@@ -67,6 +67,8 @@ void breakup(int bigNum, uint8_t* low, uint8_t* high){
     /*
         Write Task 1 code here
     */
+    *high = (bigNum >> 8);
+    *low = bigNum - (*high << 8);
 }
 
 void steering(int angle){
