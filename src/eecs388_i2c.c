@@ -3,6 +3,7 @@
 #include "eecs388_lib.h"
 #include "metal/i2c.h"
 
+// Milestone 1 changes
 
 struct metal_i2c *i2c;
 uint8_t bufWrite[9];
@@ -67,85 +68,101 @@ void breakup(int bigNum, uint8_t* low, uint8_t* high){
     /*
         Write Task 1 code here
     */
-    *high = (bigNum >> 8);
-    *low = bigNum - (*high << 8);
+   *low = bigNum & 0xFF;
+    *high = (bigNum & 0xFF00) >> 8;
+
 }
 
 void steering(int angle){
     /*
         Write Task 2 code here
     */
+    int Break = getServoCycle(angle); // return (int) circle value
+    breakup(Break, &bufWrite[3], &bufWrite[4]); 
+    bufWrite[0] = PCA9685_LED0_ON_L+4;
+    bufWrite[1] = 0; 
+    bufWrite[2] = 0; 
+    metal_i2c_transfer(i2c,PCA9685_I2C_ADDRESS,bufWrite,5 ,bufRead,1);
 }
 
 void stopMotor(){
     /*
         Write Task 3 code here
+        
     */
-    int bigNum = 280;
-    uint8_t low;
-    uint8_t high;
-    breakup(bigNum,&low,&high);
-    bufWrite[0] = low;
-    bufWrite[1] = high;
-    success = metal_i2c_transfer(i2c,PCA9685_LED0_OFF_L,bufWrite,2,bufRead,1);
+    uint8_t data_low = 0;
+    uint8_t data_high = 0;
+    breakup(280, &data_low, &data_high);
+    bufWrite[0] = 0x06;//0101
+    bufWrite[1] = 0;
+    bufWrite[2] = 0;
+
+    bufWrite[3] = data_low;
+    bufWrite[4] = data_high;
+    metal_i2c_transfer(i2c,PCA9685_I2C_ADDRESS,bufWrite,5 ,bufRead,1);
 }
 
 void driveForward(uint8_t speedFlag){
     /*
         Write Task 4 code here
     */
-    int bigNum;
-    uint8_t low;
-    uint8_t high;
-    switch (speedFlag){
-        case 1:
-            bigNum = 313;
-            break;
-        case 2:
-            bigNum = 315;
-            break;
-        case 3:
-            bigNum = 317;
-            break;
-    }
-    breakup(bigNum,&low,&high);
-    bufWrite[0] = low;
-    bufWrite[1] = high;
-    success = metal_i2c_transfer(i2c,PCA9685_LED0_OFF_L,bufWrite,2,bufRead,1);
+    uint8_t data_low = 0;
+    uint8_t data_high = 0;
+    breakup(305+speedFlag, &data_low, &data_high);
+    bufWrite[0] = 0x06;
+    bufWrite[1] = 0;
+    bufWrite[2] = 0;
+
+    bufWrite[3] = data_low;
+    bufWrite[4] = data_high;
+    metal_i2c_transfer(i2c,PCA9685_I2C_ADDRESS,bufWrite,5 ,bufRead,1);
 }
 
 void driveReverse(uint8_t speedFlag){
     /*
         Write task 5 code here
     */
-    int bigNum;
-    uint8_t low;
-    uint8_t high;
-    switch (speedFlag){
-        case 1:
-            bigNum = 267;
-            break;
-        case 2:
-            bigNum = 265;
-            break;
-        case 3:
-            bigNum = 263;
-            break;
-    }
-    breakup(bigNum,&low,&high);
-    bufWrite[0] = low;
-    bufWrite[1] = high;
-    success = metal_i2c_transfer(i2c,PCA9685_LED0_OFF_L,bufWrite,2,bufRead,1);
+    uint8_t data_low = 0;
+    uint8_t data_high = 0;
+    breakup(265+speedFlag, &data_low, &data_high);
+    bufWrite[0] = 0x06;
+    bufWrite[1] = 0;
+    bufWrite[2] = 0;
+
+    bufWrite[3] = data_low;
+    bufWrite[4] = data_high;
+    metal_i2c_transfer(i2c,PCA9685_I2C_ADDRESS,bufWrite,5 ,bufRead,1);
 }
 
 
 int main()
 {
     set_up_I2C();
+       stopMotor();
+   delay(2000);
 
     /*
         Add function calls here to complete task 6
     */
+   steering(45);
+   delay(2000);
+
+   driveForward(1);
+   delay(2000);
+
+   steering(-45);
+   delay (2000);
+
+   stopMotor();
+   delay(2000);
+
+   //driveReverse(1);
+   delay(2000);
+
+   steering(0);
+   delay(2000);
+
+   
 }
 
 
